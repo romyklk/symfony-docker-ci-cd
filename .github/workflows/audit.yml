@@ -42,12 +42,6 @@ jobs:
             --no-ansi \
             > /tmp/security-audit.json
 
-      # Optionnel pour projets Symfony uniquement
-      - name: Run Symfony security checker (optional)
-        if: success()
-        run: |
-          composer global require symfony/security-checker
-          ~/.composer/vendor/bin/security-checker security:check
 
       - name: Upload security audit report
         uses: actions/upload-artifact@v4
