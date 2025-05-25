@@ -45,6 +45,4 @@ final class UserControllerTest extends WebTestCase
         // Use the $crawler to perform additional assertions e.g.
         // self::assertSame('Some text on the page', $crawler->filter('.p')->first());
     }
-
-
 }
