@@ -49,8 +49,9 @@ jobs:
         run: composer security:check
 
       - name: Upload security audit report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: security-audit
+          name: security-audit-${{ github.run_id }}
           path: /tmp/security-audit.json
+          retention-days: 30
