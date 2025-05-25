@@ -68,4 +68,4 @@ jobs:
         run: composer app:tests
         env:
           APP_ENV: test
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd_test?serverVersion=8.0.32&charset=utf8mb4"
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd?serverVersion=8.0.32&charset=utf8mb4"
