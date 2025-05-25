@@ -44,6 +44,7 @@ jobs:
             > /tmp/security-audit.json
 
 
+
     ## Optional: UNIQUEMENT SUR LES PROJETS SYMFONY
       - name: Run security audit with Sensiolabs Security Checker
         run: composer security:check
