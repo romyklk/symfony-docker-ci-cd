@@ -73,5 +73,5 @@ jobs:
         run: composer app:tests
         env:
             APP_ENV: test
-            DATABASE_URL: "mysql://root:root@127.0.0.1:${{job.services.database.ports['3306']}}/symfony_docker_ci_cd_test?serverVersion=8.0.32&charset=utf8mb4"
+            DATABASE_URL: "mysql://user:password@127.0.0.1:3306/symfony_docker_ci_cd_test?serverVersion=8.0.32&charset=utf8mb4"     
 
