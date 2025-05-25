@@ -37,9 +37,9 @@ jobs:
       - name: Run security audit
         run: composer audit \
             --no-dev \
-            --abandoned="report" \
-            --ignore-severity="low" \
-            --format="json" \
+            --abandoned=report \
+            --ignore-severity=low \
+            --format=json \
             --no-ansi \
             > /tmp/security-audit.json
 
