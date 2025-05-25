@@ -65,8 +65,8 @@ jobs:
           retention-days: 30
 
     ## LANCER LA BDD
-      - name: Prepare Database
-        run: sudo systemctl start mysql
+    ##  - name: Prepare Database
+    ##    run: sudo systemctl start mysql
 
     ## CODE TESTING
       - name: Code Testing
