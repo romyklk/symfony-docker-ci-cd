@@ -93,6 +93,16 @@
             "bin/console lint:container",
             "./vendor/bin/phpstan analyse --memory-limit=-1",
             "./vendor/bin/rector --dry-run"
+        ],
+        "app:migration": [
+            "bin/console doctrine:migrations:migrate"
+        ],
+        "app:tests": [
+            "bin/console doctrine:database:drop --force --if-exists --env=test",
+            "bin/console doctrine:database:create --env=test",
+            "bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration --env=test",
+            "bin/console cache:clear --env=test",
+            "bin/phpunit"
         ]
     },
     "conflict": {
