@@ -3,6 +3,12 @@ name: Code Testing Workflow
 on: [push, pull_request]
 
 jobs:
+  audit: 
+    uses: .github/workflows/audit.yml
+  quality:
+    needs: audit
+    uses: .github/workflows/quality.yml
+
   code-testing:
     name: Code Testing
     runs-on: ubuntu-latest
