@@ -7,17 +7,20 @@ jobs:
     name: Code Testing
     runs-on: ubuntu-latest
     continue-on-error: false
+
     services:
       database:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: symfony_docker_ci_cd
+          MYSQL_DATABASE: symfony_ci_cd_test
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost" --health-interval=10s
-          --health-timeout=5s --health-retries=3
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     steps:
       - name: Checkout code
@@ -53,7 +56,6 @@ jobs:
             --no-ansi \
             > /tmp/security-audit.json
 
-
       - name: Upload security audit report
         uses: actions/upload-artifact@v4
         if: always()
@@ -62,14 +64,8 @@ jobs:
           path: /tmp/security-audit.json
           retention-days: 30
 
-    ## LANCER LA BDD
-    ##  - name: Prepare Database
-    ##    run: sudo systemctl start mysql
-
-    ## CODE TESTING
-      - name: Code Testing
+      - name: Run database migrations and tests
         run: composer app:tests
         env:
-            APP_ENV: test
-            DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd?serverVersion=8.0.32&charset=utf8mb4"     
-
+          APP_ENV: test
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd_test?serverVersion=8.0.32&charset=utf8mb4"
