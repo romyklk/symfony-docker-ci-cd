@@ -3,10 +3,11 @@ name: Security Audit Workflow
 on: [push, pull_request]
 
 jobs:
-  security-audit: #  Nom du job (identifiant)
-    name: Security Audit #  Nom affiché du job
+  security-audit:
+    name: Security Audit
     runs-on: ubuntu-latest
     continue-on-error: false
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -16,26 +17,24 @@ jobs:
         with:
           php-version: "8.3"
           tools: composer:v2
-    
+
       - name: Set up Composer cache
         run: echo "COMPOSER_CACHE_DIR=$(composer config cachedir)" >> $GITHUB_ENV
 
       - name: Caching dependencies
         uses: actions/cache@v4
         with:
-            path: ${{ env.COMPOSER_CACHE_DIR }}
-            key: php8.3-${{ hashFiles('**/composer.json') }}
-            restore-keys: |
-                php8.3-composer-latest
-    
-      - name: Update composer
-        run: composer self-update
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php8.3-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            php8.3-composer-
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Run security audit
-        run: composer audit \
+      - name: Run Composer security audit
+        run: |
+          composer audit \
             --no-dev \
             --abandoned=report \
             --ignore-severity=low \
@@ -43,11 +42,12 @@ jobs:
             --no-ansi \
             > /tmp/security-audit.json
 
-
-
-    ## Optional: UNIQUEMENT SUR LES PROJETS SYMFONY
-      - name: Run security audit with Sensiolabs Security Checker
-        run: composer security:check
+      # Optionnel pour projets Symfony uniquement
+      - name: Run Symfony security checker (optional)
+        if: success()
+        run: |
+          composer global require symfony/security-checker
+          ~/.composer/vendor/bin/security-checker security:check
 
       - name: Upload security audit report
         uses: actions/upload-artifact@v4
