@@ -1,25 +1,65 @@
-
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+  php:
+    user: "${USER_ID}:${GROUP_ID}" # Utilisateur et groupe de l'hôte pour éviter les problèmes de permissions
+    build: ./docker/php
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      - .:/var/www:delegated # delegated pour performance(Une option de performance utilisée pour les systèmes de fichiers montés)
+    networks:
+      - app_network
+    depends_on:
+      - database
+    restart: unless-stopped
+
+
+  nginx:
+    build: ./docker/nginx
+    volumes:
+      - ./public:/var/www/public:delegated # Point d'entré pour le dossier public de Symfony
+    ports:
+      - "9999:80"  # Port exposé pour accéder à l'application
+    networks:
+      - app_network
+    depends_on:
+      - php
+    restart: unless-stopped
+
+
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: symfony_docker_ci_cd
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      # MYSQL_ALLOW_EMPTY_ROOT_PASSWORD supprimé (inutile avec MYSQL_ROOT_PASSWORD)
+    volumes:
+      # Option 1: Volume Docker nommé (recommandé pour la persistance)
+      - database_data:/var/lib/mysql
+      # Option 2: Si vous voulez un dossier local, utilisez plutôt :
+      # - ./vars/mysql:/var/lib/mysql
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest  #  Image correcte
+    depends_on:
+      - database
+    environment:
+      PMA_HOST: database          #  Connexion à MySQL
+      PMA_PORT: 3306
+      PMA_USER: root             #  Utilisateur pour la connexion
+      PMA_PASSWORD: root         #  Mot de passe
+      MYSQL_ROOT_PASSWORD: root  #  Nécessaire pour PHPMyAdmin
+    ports:
+      - "8080:80"
+    networks:
+      - app_network
+    restart: unless-stopped
+
+networks:
+  app_network:
+    driver: bridge # Réseau bridge (par défaut) - isolation et communication interne
 
 volumes:
-###> doctrine/doctrine-bundle ###
   database_data:
-###< doctrine/doctrine-bundle ###
