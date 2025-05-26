@@ -42,7 +42,7 @@ APP_ENV=prod php bin/console cache:clear
 APP_ENV=prod php bin/console cache:warmup
 
 echo "🔒 Correction des permissions finales..."
-chown -R www-data:www-data /var/www/var
+chown -R www-data:www-data /var/www
 
 echo "✅ Déploiement complet terminé avec succès !"
 echo "🌐 L'application est maintenant en mode production"
