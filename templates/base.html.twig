@@ -1,17 +1,79 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="fr">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Application Symfony{% endblock %}</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    {% block stylesheets %}{% endblock %}
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="{{ path('app_home') }}" class="nav-brand">
+                    <span>🚀</span> Mon App
+                </a>
+                <ul class="nav-links">
+                    <li><a href="{{ path('app_home') }}" class="nav-link">Accueil</a></li>
+                    {% if app.user %}
+                    <li><a href="{{ path('app_user_index') }}" class="nav-link">Utilisateurs</a></li>
+                    <li>
+                        <div class="user-status">
+                            <div class="user-avatar">{{ app.user.email|first|upper }}</div>
+                            <span>{{ app.user.email }}</span>
+                            <a href="{{ path('app_logout') }}" class="btn btn-outline btn-sm">Déconnexion</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li><a href="{{ path('app_login') }}" class="nav-link">Connexion</a></li>
+                    <li><a href="{{ path('app_register') }}" class="btn btn-primary btn-sm">Inscription</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav> <!-- Main Content -->
+    <main class="main-content">
+        <div class="container fade-in">
+            {% block body %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>🚀 Mon App</h4>
+                    <p>Une application Symfony moderne et professionnelle</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liens rapides</h4>
+                    <ul>
+                        <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                        {% if app.user %}
+                        <li><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+                        {% else %}
+                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                        <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Informations</h4>
+                    <p>Développé avec Symfony {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</p>
+                    <p>&copy; {{ 'now'|date('Y') }} Mon App. Tous droits réservés.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% block javascripts %}{% endblock %}
+</body>
+
 </html>

@@ -1,0 +1,107 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  audit:
+    name: Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+      - run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php8.3-${{ hashFiles('**/composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - run: |
+          composer audit --no-dev --abandoned=report --ignore-severity=low --format=json --no-ansi > /tmp/security-audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report-${{ github.run_id }}
+          path: /tmp/security-audit.json
+
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+      - run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php8.3-${{ hashFiles('**/composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - run: composer app:code-quality
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: [audit, quality]
+    if: ${{ always() && needs.audit.result == 'success' && needs.quality.result == 'success' }}
+    services:
+      database:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: symfony_ci_cd_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+      - run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php8.3-${{ hashFiles('**/composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - run: composer app:tests
+        env:
+          APP_ENV: test
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd_test?serverVersion=8.0.32&charset=utf8mb4"
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: tests
+    if: ${{ needs.tests.result == 'success' && github.ref == 'refs/heads/production' }}
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www
+            git pull origin production
+            composer install --no-dev --optimize-autoloader
+            php bin/console doctrine:database:create --if-not-exists
+            php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+            php bin/console asset-map:compile
+            php bin/console cache:clear --env=prod

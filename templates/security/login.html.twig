@@ -1,34 +1,61 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_auth.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion{% endblock %}
+
+{% block page_class %}login-page{% endblock %}
 
 {% block body %}
-<form method="post" data-turbo="false">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
-
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+<div class="d-flex justify-center">
+    <div class="auth-card">
+        <div class="card-header">
+            <h1 class="card-title">🔑 Connexion</h1>
+            <p>Connectez-vous à votre compte</p>
         </div>
-    {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+            {% endif %}
 
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
+            {% if app.user %}
+            <div class="alert alert-success">
+                Vous êtes connecté en tant que {{ app.user.userIdentifier }},
+                <a href="{{ path('app_logout') }}">Se déconnecter</a>
+            </div>
+            {% endif %}
+
+            <form method="post" data-turbo="false">
+                <div class="form-group">
+                    <label for="inputEmail" class="form-label">Email</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control"
+                        autocomplete="email" required autofocus placeholder="votre@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword" class="form-label">Mot de passe</label>
+                    <input type="password" name="password" id="inputPassword" class="form-control"
+                        autocomplete="current-password" required placeholder="Votre mot de passe">
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="form-check">
+                    <input type="checkbox" name="_remember_me" id="remember_me" class="form-check-input">
+                    <label for="remember_me" class="form-label">Se souvenir de moi</label>
+                </div>
+
+                <button class="btn btn-primary w-100" type="submit">
+                    Se connecter
+                </button>
+            </form>
+        </div>
+
+        <div class="card-body text-center" style="border-top: 1px solid var(--border-color);">
+            <p class="text-secondary">Pas encore de compte ?</p>
+            <a href="{{ path('app_register') }}" class="btn btn-outline">S'inscrire</a>
+        </div>
     </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+</div>
 {% endblock %}
