@@ -125,3 +125,6 @@ jobs:
 
           # Nettoyage du cache
           docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console cache:clear --env=prod
+          docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console cache:warmup --env=prod
+          docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console assets:install --symlink --relative --env=prod
+

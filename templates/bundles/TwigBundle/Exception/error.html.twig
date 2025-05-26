@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur - Mon App{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>❌ Erreur</h1>
+    <p style="margin: 1.5rem 0; color: #666;">
+        Une erreur s'est produite.
+    </p>
+    <div style="margin-top: 2rem;">
+        <a href="{{ path('app_home') }}" style="color: #007bff; text-decoration: none;">
+            ← Retour à l'accueil
+        </a>
+    </div>
+</div>
+{% endblock %}

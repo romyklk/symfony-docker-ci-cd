@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page non trouvée - Mon App{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>🔍 Page non trouvée</h1>
+    <p style="margin: 1.5rem 0; color: #666;">
+        La page que vous cherchez n'existe pas.
+    </p>
+    <div style="margin-top: 2rem;">
+        <a href="{{ path('app_home') }}" style="color: #007bff; text-decoration: none;">
+            ← Retour à l'accueil
+        </a>
+    </div>
+</div>
+{% endblock %}
