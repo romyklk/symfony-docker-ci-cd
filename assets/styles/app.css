@@ -26,8 +26,8 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
-    color: var(--text-primary);
-    background-color: var(--light-bg);
+    color: var(--light-bg);
+    background-color: var(--primary-hover);
     min-height: 100vh;
 }
 
