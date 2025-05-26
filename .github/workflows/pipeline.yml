@@ -126,18 +126,23 @@ jobs:
           # Nettoyer vendor et lock file pour éviter les conflits de suppression
           docker exec -u www-data symfony-docker-ci-cd_php_1 rm -rf vendor composer.lock
 
-          # Réinstaller proprement les dépendances
-          docker exec -u www-data symfony-docker-ci-cd_php_1 composer install --no-dev --optimize-autoloader
+          # Réinstaller proprement les dépendances sans exécuter les auto-scripts
+          docker exec -u www-data symfony-docker-ci-cd_php_1 composer install --no-dev --optimize-autoloader --no-scripts
 
           # Base de données
           docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console doctrine:database:create --if-not-exists
           docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
           # Compilation des assets
-          docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console asset-map:compile
+          docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console asset-map:compile --env=prod
+
+          # Installation des assets web
+          docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console assets:install --symlink --relative --env=prod
+
+          # Installation de l'importmap
+          docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console importmap:install --env=prod
 
           # Nettoyage du cache
           docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console cache:clear --env=prod
           docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console cache:warmup --env=prod
-          docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console assets:install --symlink --relative --env=prod
 
