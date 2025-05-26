@@ -2,14 +2,8 @@ name: Code Testing Workflow
 
 #on: [push, pull_request]
 
-on: 
-  workflow_call: 
-  push: 
-    branches-ignore:
-      - production
-  pull_request:
-    branches-ignore:
-      - production
+on:
+  workflow_call:
 
 
 jobs:
