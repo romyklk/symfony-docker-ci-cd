@@ -2,7 +2,6 @@ services:
   php:
     user: "${USER_ID}:${GROUP_ID}" # Utilisateur et groupe de l'hôte pour éviter les problèmes de permissions
     build: ./docker/php
-    container_name: symfony_php
     volumes:
       - .:/var/www:delegated # delegated pour performance(Une option de performance utilisée pour les systèmes de fichiers montés)
     networks:
@@ -16,7 +15,6 @@ services:
     build: ./docker/nginx
     volumes:
       - ./public:/var/www/public:delegated # Point d'entré pour le dossier public de Symfony
-    container_name: symfony_nginx
     ports:
       - "80:80"  # Port exposé pour accéder à l'application
     networks:
@@ -39,7 +37,6 @@ services:
       - database_data:/var/lib/mysql
       # Option 2: Si vous voulez un dossier local, utilisez plutôt :
       # - ./vars/mysql:/var/lib/mysql
-    container_name: symfony_database
     networks:
       - app_network
     restart: unless-stopped
