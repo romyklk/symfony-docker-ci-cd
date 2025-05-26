@@ -1,10 +1,6 @@
 name: Code Testing Workflow
 
-#on: [push, pull_request]
-
-on:
-  workflow_call:
-
+on: [push, pull_request]
 
 jobs:
   code-testing:
