@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accès refusé - Mon App{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>🚫 Accès refusé</h1>
+    <p style="margin: 1.5rem 0; color: #666;">
+        Vous n'avez pas l'autorisation d'accéder à cette page.
+    </p>
+    <div style="margin-top: 2rem;">
+        <a href="{{ path('app_home') }}" style="color: #007bff; text-decoration: none;">
+            ← Retour à l'accueil
+        </a>
+    </div>
+</div>
+{% endblock %}
