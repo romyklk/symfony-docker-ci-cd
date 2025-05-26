@@ -16,7 +16,7 @@ services:
     volumes:
       - ./public:/var/www/public:delegated # Point d'entré pour le dossier public de Symfony
     ports:
-      - "9999:80"  # Port exposé pour accéder à l'application
+      - "80:80"  # Port exposé pour accéder à l'application
     networks:
       - app_network
     depends_on:
