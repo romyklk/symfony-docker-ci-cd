@@ -1,12 +1,22 @@
-name: Code Testing Workflow
+name: Code Testing
 
-on: [push, pull_request]
+on:
+  workflow_run:
+    workflows: ["Security Audit", "Code Quality"]
+    types:
+      - completed
 
 jobs:
+  wait-for-both:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Waiting for Security Audit and Code Quality to finish."
+
   code-testing:
     name: Code Testing
+    needs: wait-for-both
     runs-on: ubuntu-latest
-    continue-on-error: false
 
     services:
       database:
@@ -23,49 +33,24 @@ jobs:
           --health-retries=3
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
           tools: composer:v2
 
-      - name: Set up Composer cache
-        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+      - run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
 
-      - name: Caching dependencies
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
           key: php8.3-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            php8.3-composer-
+          restore-keys: php8.3-composer-
 
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Run Composer security audit
-        run: |
-          composer audit \
-            --no-dev \
-            --abandoned=report \
-            --ignore-severity=low \
-            --format=json \
-            --no-ansi \
-            > /tmp/security-audit.json
-
-      - name: Upload security audit report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: security-audit-${{ github.run_id }}
-          path: /tmp/security-audit.json
-          retention-days: 30
-
-      - name: Run database migrations and tests
-        run: composer app:tests
+      - run: composer app:tests
         env:
           APP_ENV: test
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd?serverVersion=8.0.32&charset=utf8mb4"
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd_test?serverVersion=8.0.32&charset=utf8mb4"
