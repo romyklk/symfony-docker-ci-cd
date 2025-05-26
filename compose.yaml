@@ -9,10 +9,7 @@ services:
     depends_on:
       - database
     restart: unless-stopped
-    environment:
-      - APP_ENV=prod
-      - APP_DEBUG=0
-
+    
 
 
   nginx:
