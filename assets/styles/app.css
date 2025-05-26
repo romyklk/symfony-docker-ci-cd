@@ -27,7 +27,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     color: var(--light-bg);
-    background-color: var(--primary-hover);
+    background-color: indigo;
     min-height: 100vh;
 }
 
@@ -45,7 +45,8 @@ body {
 
 /* Navigation */
 .navbar {
-    background: var(--white);
+    background: indigo;
+    color: var(--white);
     border-bottom: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
     padding: 1rem 0;
