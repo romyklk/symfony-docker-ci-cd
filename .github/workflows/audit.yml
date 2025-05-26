@@ -1,16 +1,6 @@
 name: Security Audit Workflow
 
-#on: [push, pull_request]
-
-on: 
-  workflow_call: 
-  push: 
-    branches-ignore:
-      - production
-  pull_request:
-    branches-ignore:
-      - production
-
+on: [push, pull_request]
 
 jobs:
   security-audit:
