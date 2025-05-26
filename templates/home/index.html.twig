@@ -1,20 +1,64 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Accueil - Application Symfony{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/src/Controller/HomeController.php</code></li>
-        <li>Your template at <code>/var/www/templates/home/index.html.twig</code></li>
-    </ul>
+<div class="welcome-hero">
+    <h1>🚀 Bienvenue sur Mon App</h1>
+    <p class="text-secondary">Une application Symfony moderne et professionnelle</p>
 </div>
+
+<div class="welcome-features">
+    <div class="card feature-card">
+        <div class="feature-icon">🔐</div>
+        <div class="card-body">
+            <h3 class="card-title">Authentification</h3>
+            <p>Système d'authentification sécurisé avec inscription et connexion</p>
+            {% if not app.user %}
+            <div class="d-flex gap-2 justify-center mt-3">
+                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+                <a href="{{ path('app_register') }}" class="btn btn-outline">S'inscrire</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card feature-card">
+        <div class="feature-icon">👥</div>
+        <div class="card-body">
+            <h3 class="card-title">Gestion d'utilisateurs</h3>
+            <p>Interface CRUD complète pour la gestion des utilisateurs</p>
+            {% if app.user %}
+            <div class="mt-3">
+                <a href="{{ path('app_user_index') }}" class="btn btn-primary">Voir les utilisateurs</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="card-body">
+            <h3 class="card-title">Performance</h3>
+            <p>Application optimisée avec cache, assets compilés et déploiement automatisé</p>
+        </div>
+    </div>
+</div>
+
+{% if app.user %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">Tableau de bord</h2>
+    </div>
+    <div class="card-body">
+        <div class="user-status">
+            <div class="user-avatar">{{ app.user.email|first|upper }}</div>
+            <div>
+                <p><strong>Connecté en tant que :</strong> {{ app.user.email }}</p>
+                <p class="text-secondary">Rôles : {{ app.user.roles|join(', ') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
