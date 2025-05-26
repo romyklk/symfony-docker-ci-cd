@@ -101,7 +101,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www
             git pull origin production
             composer install --no-dev --optimize-autoloader
             php bin/console doctrine:database:create --if-not-exists
