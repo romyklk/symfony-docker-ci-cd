@@ -48,3 +48,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ 
 # Tous les fichiers de votre application Symfony seront ici
 # /var/www = répertoire standard pour les applications web
 WORKDIR /var/www
+
+# Changer le propriétaire des fichiers vers www-data (utilisateur dans le conteneur)
+RUN chown -R www-data:www-data /var/www
+
+# Travailler avec l’utilisateur www-data
+USER www-data
