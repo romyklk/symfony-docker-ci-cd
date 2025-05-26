@@ -1,15 +1,16 @@
-name: Full CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-      - production
   pull_request:
+    branches:
+      - main
 
 jobs:
-  initialisation:
-    name: Initialisation
+  audit:
+    name: Audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,34 +23,37 @@ jobs:
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
           key: php8.3-${{ hashFiles('**/composer.lock') }}
-          restore-keys: php8.3-composer-
       - run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-  audit:
-    name: Audit
-    needs: initialisation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Audit
-        run: composer audit --no-dev --abandoned=report --ignore-severity=low --format=json --no-ansi > /tmp/security-audit.json
+      - run: |
+          composer audit --no-dev --abandoned=report --ignore-severity=low --format=json --no-ansi > /tmp/security-audit.json
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: security-audit-${{ github.run_id }}
+          name: audit-report-${{ github.run_id }}
           path: /tmp/security-audit.json
-          retention-days: 30
 
   quality:
     name: Code Quality
-    needs: initialisation
     runs-on: ubuntu-latest
     steps:
-      - name: Quality Analysis
-        run: composer app:code-quality
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+      - run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php8.3-${{ hashFiles('**/composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - run: composer app:code-quality
 
-  test:
+  tests:
     name: Tests
-    needs: [audit, quality]
     runs-on: ubuntu-latest
+    needs: [audit, quality]
+    if: ${{ always() && needs.audit.result == 'success' && needs.quality.result == 'success' }}
     services:
       database:
         image: mysql:8.0
@@ -64,16 +68,27 @@ jobs:
           --health-timeout=5s
           --health-retries=3
     steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+      - run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php8.3-${{ hashFiles('**/composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
       - run: composer app:tests
         env:
           APP_ENV: test
           DATABASE_URL: "mysql://root:root@127.0.0.1:3306/symfony_ci_cd_test?serverVersion=8.0.32&charset=utf8mb4"
 
   deploy:
-    name: Deploy to Production
-    if: github.ref == 'refs/heads/production'
-    needs: test
+    name: Deploy
     runs-on: ubuntu-latest
+    needs: tests
+    if: ${{ needs.tests.result == 'success' && github.ref == 'refs/heads/production' }}
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
