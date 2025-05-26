@@ -107,6 +107,9 @@ jobs:
           # Mettre à jour le code
           docker exec -u www-data symfony-docker-ci-cd_php_1 git pull origin production
 
+          # 🔧 Corriger les permissions pour éviter les erreurs d'accès
+          docker exec symfony-docker-ci-cd_php_1 chown -R www-data:www-data /var/www
+
           # Nettoyer vendor et lock file pour éviter les conflits de suppression
           docker exec -u www-data symfony-docker-ci-cd_php_1 rm -rf vendor composer.lock
 
@@ -122,5 +125,3 @@ jobs:
 
           # Nettoyage du cache
           docker exec -u www-data symfony-docker-ci-cd_php_1 php bin/console cache:clear --env=prod
-
-
