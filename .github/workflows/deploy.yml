@@ -12,7 +12,6 @@ on:
       - production
 
 jobs:
-  # Vérifier que le CI est passé avant de déployer
   check-ci:
     name: Check CI Status
     runs-on: ubuntu-latest
@@ -62,15 +61,11 @@ jobs:
           command_timeout: 60s
           script: |
             set -e
-
-            # Aller dans le répertoire du projet
             cd /monapp/symfony-docker-ci-cd || exit 1
-
-            # Exécuter le script de déploiement
             ./deploy.sh
 
       - name: Skip deployment (missing secrets)
         if: steps.check-secrets.outputs.missing == 'true'
         run: |
-          cd /monapp/symfony-docker-ci-cd
-          ./deploy.sh
+          echo "🚫 Déploiement sauté : secrets SSH manquants."
+          echo "Veuillez configurer les secrets suivants dans les paramètres du dépôt :"
