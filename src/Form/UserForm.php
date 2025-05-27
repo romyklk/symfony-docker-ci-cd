@@ -29,7 +29,7 @@ class UserForm extends AbstractType
                 'required' => false,
                 'attr' => [
                     'autocomplete' => 'new-password',
-                    'placeholder' => 'Laissez vide pour ne pas changer'
+                    'placeholder' => 'Laissez vide pour ne pas changer',
                 ],
             ])
         ;

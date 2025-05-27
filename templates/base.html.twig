@@ -2,26 +2,7 @@
 <html lang="fr">
 
 <head>
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <div class="fade-in">
-                {% for flash_error in app.flashes('verify_email_error') %}
-                <div class="alert alert-error">{{ flash_error }}</div>
-                {% endfor %}
-
-                {% for flash_success in app.flashes('success') %}
-                <div class="alert alert-success">{{ flash_success }}</div>
-                {% endfor %}
-
-                {% for flash_error in app.flashes('error') %}
-                <div class="alert alert-error">{{ flash_error }}</div>
-                {% endfor %}
-
-                {% block body %}{% endblock %}
-            </div>
-        </div>
-    </main>eta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Application Symfony{% endblock %}</title>
     <link rel="icon"
@@ -30,8 +11,8 @@
     {% block importmap %}{{ importmap('app') }}{% endblock %}
 </head>
 
-<body>
-    <!-- Navigation -->
+<body class="auth-page {% block page_class %}{% endblock %}">
+    <!-- Navigation simplifiée -->
     <header class="header">
         <nav class="navbar">
             <div class="container">
@@ -39,64 +20,38 @@
                     <a href="{{ path('app_home') }}" class="nav-brand">
                         <span>🚀</span> Mon App
                     </a>
-                    <ul class="nav-links">
-                        <li><a href="{{ path('app_home') }}"
-                                class="nav-link {% if app.request.get('_route') == 'app_home' %}active{% endif %}">Accueil</a>
-                        </li>
-                        {% if app.user %}
-                        <li><a href="{{ path('app_user_index') }}"
-                                class="nav-link {% if app.request.get('_route') starts with 'app_user' %}active{% endif %}">Utilisateurs</a>
-                        </li>
-                        <li>
-                            <div class="d-flex items-center gap-md">
-                                <div class="user-avatar">{{ app.user.email|first|upper }}</div>
-                                <span class="text-sm text-muted">{{ app.user.email }}</span>
-                                <a href="{{ path('app_logout') }}" class="btn btn-outline btn-sm">Déconnexion</a>
-                            </div>
-                        </li>
-                        {% else %}
-                        <li><a href="{{ path('app_login') }}" class="nav-link">Connexion</a></li>
-                        <li><a href="{{ path('app_register') }}" class="btn btn-primary btn-sm">Inscription</a></li>
-                        {% endif %}
-                    </ul>
+                    <div class="nav-links">
+                        <a href="{{ path('app_home') }}" class="btn btn-ghost btn-sm">← Retour à l'accueil</a>
+                    </div>
                 </div>
             </div>
         </nav>
-    </header> <!-- Main Content -->
+    </header>
+
+    <!-- Main Content -->
     <main class="main-content">
-        <div class="container fade-in">
+        <div class="container">
+            {% for flash_error in app.flashes('verify_email_error') %}
+            <div class="alert alert-error">{{ flash_error }}</div>
+            {% endfor %}
+
+            {% for flash_success in app.flashes('success') %}
+            <div class="alert alert-success">{{ flash_success }}</div>
+            {% endfor %}
+
+            {% for flash_error in app.flashes('error') %}
+            <div class="alert alert-error">{{ flash_error }}</div>
+            {% endfor %}
+
             {% block body %}{% endblock %}
         </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Footer simplifié -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>🚀 Mon App</h4>
-                    <p>Une application Symfony moderne et professionnelle</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Liens rapides</h4>
-                    <ul>
-                        <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                        {% if app.user %}
-                        <li><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
-                        {% if 'ROLE_ADMIN' in app.user.roles %}
-                        <li><a href="{{ path('app_style_guide') }}">🎨 Guide de style</a></li>
-                        {% endif %}
-                        {% else %}
-                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
-                        <li><a href="{{ path('app_register') }}">Inscription</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Informations</h4>
-                    <p>Développé avec Symfony {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</p>
-                    <p>&copy; {{ 'now'|date('Y') }} Mon App. Tous droits réservés.</p>
-                </div>
+            <div class="text-center">
+                <p class="footer-text">&copy; {{ 'now'|date('Y') }} Mon App. Développé avec ❤️ et Symfony</p>
             </div>
         </div>
     </footer>

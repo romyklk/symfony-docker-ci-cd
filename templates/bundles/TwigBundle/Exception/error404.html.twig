@@ -3,15 +3,129 @@
 {% block title %}Page non trouvée - Mon App{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>🔍 Page non trouvée</h1>
-    <p style="margin: 1.5rem 0; color: #666;">
-        La page que vous cherchez n'existe pas.
-    </p>
-    <div style="margin-top: 2rem;">
-        <a href="{{ path('app_home') }}" style="color: #007bff; text-decoration: none;">
-            ← Retour à l'accueil
-        </a>
+<div class="error-page">
+    <div class="error-container">
+        <div class="error-icon">🔍</div>
+        <h1 class="error-title">Page non trouvée</h1>
+        <div class="error-code">Erreur 404</div>
+        <p class="error-message">
+            Désolé, la page que vous cherchez n'existe pas ou a été déplacée.
+        </p>
+        <div class="error-actions">
+            <a href="{{ path('app_home') }}" class="btn btn-primary">
+                <span class="btn-icon">🏠</span>
+                Retour à l'accueil
+            </a>
+            <button onclick="history.back()" class="btn btn-secondary">
+                <span class="btn-icon">↩️</span>
+                Page précédente
+            </button>
+        </div>
+        <div class="error-suggestions">
+            <h3>Suggestions :</h3>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                {% if app.user %}
+                <li><a href="{{ path('app_user_index') }}">Gestion des utilisateurs</a></li>
+                {% else %}
+                <li><a href="{{ path('app_login') }}">Se connecter</a></li>
+                <li><a href="{{ path('app_register') }}">Créer un compte</a></li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
 </div>
+
+<style>
+    .error-page {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .error-container {
+        max-width: 500px;
+        padding: var(--spacing-xl);
+    }
+
+    .error-icon {
+        font-size: 4rem;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .error-title {
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-sm);
+        font-size: var(--font-size-3xl);
+    }
+
+    .error-code {
+        color: var(--color-medium-gray);
+        font-size: var(--font-size-xl);
+        font-weight: 600;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .error-message {
+        color: var(--color-dark-gray);
+        margin-bottom: var(--spacing-xl);
+        line-height: 1.6;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: var(--spacing-md);
+        justify-content: center;
+        margin-bottom: var(--spacing-xl);
+        flex-wrap: wrap;
+    }
+
+    .error-suggestions {
+        background-color: var(--color-light-gray);
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius);
+        text-align: left;
+    }
+
+    .error-suggestions h3 {
+        margin-bottom: var(--spacing-md);
+        color: var(--color-primary);
+        font-size: var(--font-size-lg);
+    }
+
+    .error-suggestions ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .error-suggestions li {
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .error-suggestions a {
+        color: var(--color-accent);
+        text-decoration: none;
+        padding: var(--spacing-xs) 0;
+        display: inline-block;
+    }
+
+    .error-suggestions a:hover {
+        color: var(--color-primary);
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .error-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .error-actions .btn {
+            width: 100%;
+            max-width: 250px;
+        }
+    }
+</style>
 {% endblock %}
