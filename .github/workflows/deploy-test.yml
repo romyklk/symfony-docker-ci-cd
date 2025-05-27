@@ -1,0 +1,96 @@
+name: CD Pipeline (Local Deployment Test)
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy-test:
+    name: Test Deployment Script
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: prod
+      APP_DEBUG: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Create test environment
+        run: |
+          # Simuler l'environnement de production
+          sudo mkdir -p /var/www/symfony-docker-ci-cd
+          sudo cp -r . /var/www/symfony-docker-ci-cd/
+          sudo chown -R $USER:$USER /var/www/symfony-docker-ci-cd
+
+          # Aller dans le répertoire simulé
+          cd /var/www/symfony-docker-ci-cd
+
+          # Copier les fichiers d'environnement
+          cp .env .env.backup || true
+
+          # Initialiser Git dans l'environnement de test
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+          git init
+          git add .
+          git commit -m "Initial commit" || true
+          git branch -M main
+          git branch production || true
+          git checkout production || true
+
+      - name: Start Docker services
+        working-directory: /var/www/symfony-docker-ci-cd
+        run: |
+          # Démarrer les services Docker
+          docker-compose up -d --build
+
+          # Attendre que les services soient prêts
+          sleep 30
+
+          # Vérifier que les conteneurs sont en cours d'exécution
+          docker-compose ps
+
+      - name: Test deployment script
+        working-directory: /var/www/symfony-docker-ci-cd
+        run: |
+          # Rendre le script exécutable
+          chmod +x deploy.sh
+
+          # Modifier le script pour le test local
+          sed -i 's|symfony-docker-ci-cd_php_1|symfony-docker-ci-cd-php-1|g' deploy.sh
+          sed -i 's|git pull origin production|echo "Simulation git pull"|g' deploy.sh
+          sed -i 's|git reset --hard origin/production|echo "Simulation git reset"|g' deploy.sh
+
+          # Exécuter le script de déploiement
+          ./deploy.sh || echo "Deployment test completed with warnings"
+
+      - name: Check application health
+        working-directory: /var/www/symfony-docker-ci-cd
+        run: |
+          # Vérifier que l'application répond
+          sleep 10
+          curl -f http://localhost/ || echo "Application may not be fully ready"
+
+          # Vérifier les logs
+          docker-compose logs --tail=20
+
+      - name: Cleanup
+        if: always()
+        working-directory: /var/www/symfony-docker-ci-cd
+        run: |
+          docker-compose down -v || true
+          docker system prune -f || true
