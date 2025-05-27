@@ -32,6 +32,9 @@ jobs:
       APP_ENV: prod
       APP_DEBUG: 0
     steps:
+      - name: Vérifier la présence de deploy.sh
+        run: ls -la
+        
       - name: Copier deploy.sh sur le serveur
         uses: appleboy/scp-action@v0.1.3
         with:
