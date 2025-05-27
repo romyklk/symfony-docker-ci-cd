@@ -61,11 +61,9 @@ jobs:
           command_timeout: 60s
           script: |
             set -e
-            cd /monapp/symfony-docker-ci-cd || exit 1
-            ./deploy.sh
+            echo "Connecté à $(hostname) $(whoami)"
+            echo "Déploiement de l'application Symfony..."
+            pwd
+            echo "Vérification de la présence du dossier de l'application..."
+            ls -la /monapp
 
-      - name: Skip deployment (missing secrets)
-        if: steps.check-secrets.outputs.missing == 'true'
-        run: |
-          echo "🚫 Déploiement sauté : secrets SSH manquants."
-          echo "Veuillez configurer les secrets suivants dans les paramètres du dépôt :"
