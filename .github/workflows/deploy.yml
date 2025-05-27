@@ -65,3 +65,8 @@ jobs:
             pwd
             echo "Vérification de la présence du dossier de l'application..."
             ls -la /monapp
+            echo "Listing /monapp/symfony-docker-ci-cd"
+            ls -la /monapp/symfony-docker-ci-cd
+            cd /monapp/symfony-docker-ci-cd || { echo "Le dossier n'existe pas"; exit 1; }
+            echo "PWD après cd : $(pwd)"
+            ./deploy.sh
