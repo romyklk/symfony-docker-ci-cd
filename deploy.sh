@@ -18,8 +18,13 @@ error() { log "$RED" "ERROR: $1"; }
 check_prereqs() {
   info "Vérification des prérequis..."
   docker ps >/dev/null || { error "Docker non démarré"; exit 1; }
-  [ -d "$PROJECT_PATH" ] || { error "Projet introuvable"; exit 1; }
-  docker ps -a --format "{{.Names}}" | grep -q "$CONTAINER" || { error "Conteneur absent"; exit 1; }
+  [ -d "$PROJECT_PATH" ] || { error "Projet introuvable: $PROJECT_PATH"; exit 1; }
+  docker ps -a --format "{{.Names}}" | grep -q "$CONTAINER" || { error "Conteneur absent: $CONTAINER"; exit 1; }
+  # Vérifier présence ssh dans le conteneur
+  if ! docker exec "$CONTAINER" command -v ssh >/dev/null 2>&1; then
+    warn "ssh absent dans le conteneur, tentative d'installation"
+    docker exec "$CONTAINER" apt-get update && docker exec "$CONTAINER" apt-get install -y openssh-client
+  fi
   success "Pré-requis OK"
 }
 
@@ -27,8 +32,10 @@ backup() {
   info "Création sauvegarde..."
   mkdir -p "$BACKUP_DIR"
   tar -czf "$BACKUP_DIR/source_$TIMESTAMP.tar.gz" -C "$PROJECT_PATH" . || warn "Sauvegarde code échouée"
-  if docker exec "$CONTAINER" which mysqldump >/dev/null 2>&1; then
+  if docker exec "$CONTAINER" command -v mysqldump >/dev/null 2>&1; then
     docker exec "$CONTAINER" mysqldump -h mysql -u symfony -psymfony symfony_app > "$BACKUP_DIR/database_$TIMESTAMP.sql" || warn "Sauvegarde BDD échouée"
+  else
+    warn "mysqldump absent dans le conteneur, sauvegarde BDD ignorée"
   fi
   success "Sauvegarde terminée"
 }
@@ -36,14 +43,21 @@ backup() {
 update_code() {
   info "Mise à jour du code..."
   cd "$PROJECT_PATH"
+  # Ajouter safe directory pour éviter erreur git dans conteneur
   docker exec -u www-data "$CONTAINER" git config --global --add safe.directory /var/www
-  docker exec -u www-data "$CONTAINER" git fetch origin
+  # Préparer ssh-agent dans le conteneur
+  docker exec "$CONTAINER" bash -c "eval \$(ssh-agent -s) && ssh-add ~/.ssh/id_rsa || true"
+  # Ajouter github.com au known_hosts pour éviter host verification failed
+  docker exec "$CONTAINER" ssh-keyscan github.com >> /tmp/known_hosts 2>/dev/null || true
+  docker exec "$CONTAINER" bash -c "mkdir -p ~/.ssh && cat /tmp/known_hosts >> ~/.ssh/known_hosts"
+  # Récupérer dernier code depuis prod
+  docker exec -u www-data "$CONTAINER" git fetch origin production
   docker exec -u www-data "$CONTAINER" git reset --hard origin/production
   success "Code à jour"
 }
 
 cleanup() {
-  info "Nettoyage cache et vendor..."
+  info "Nettoyage cache, logs, vendor et composer.lock..."
   docker exec -u www-data "$CONTAINER" rm -rf var/cache/* var/log/* vendor composer.lock || true
   success "Nettoyage fait"
 }
