@@ -53,10 +53,10 @@ jobs:
         if: steps.check-secrets.outputs.missing == 'false'
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.PROD_SSH_HOST }}
-          username: ${{ secrets.PROD_SSH_USERNAME }}
-          port: ${{ secrets.PROD_SSH_PORT || '22' }}
-          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME  }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 300s
           command_timeout: 60s
           script: |
