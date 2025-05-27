@@ -3,17 +3,36 @@
 {% block title %}Nouvel utilisateur{% endblock %}
 
 {% block body %}
-<div class="d-flex justify-between align-center mb-4">
-    <h1>➕ Créer un utilisateur</h1>
-    <a href="{{ path('app_user_index') }}" class="btn btn-outline">← Retour à la liste</a>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">Informations utilisateur</h2>
+<div class="section">
+    <div class="d-flex justify-between items-center mb-4">
+        <div>
+            <h1>➕ Créer un utilisateur</h1>
+            <p class="text-muted">Ajoutez un nouvel utilisateur à l'application</p>
+        </div>
+        <a href="{{ path('app_user_index') }}" class="btn btn-outline">← Retour à la liste</a>
     </div>
-    <div class="card-body">
-        {{ include('user/_form.html.twig', {'button_label': 'Créer'}) }}
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title m-0">Informations utilisateur</h2>
+        </div>
+        <div class="card-body">
+            {{ include('user/_form.html.twig', {'button_label': 'Créer l\'utilisateur'}) }}
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 class="card-title m-0">ℹ️ Informations importantes</h3>
+        </div>
+        <div class="card-body">
+            <ul class="text-sm text-muted">
+                <li>L'utilisateur recevra un email avec ses informations de connexion</li>
+                <li>Le mot de passe doit contenir au moins 8 caractères</li>
+                <li>Les rôles déterminent les permissions dans l'application</li>
+                <li>Un utilisateur peut avoir plusieurs rôles simultanément</li>
+            </ul>
+        </div>
     </div>
 </div>
 {% endblock %}

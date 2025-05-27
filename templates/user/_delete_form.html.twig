@@ -1,5 +1,37 @@
-<form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}"
-    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-    <button class="btn btn-danger btn-sm">🗑️ Supprimer</button>
-</form>
+<div class="danger-zone">
+    <div class="danger-zone-header">
+        <div class="danger-icon">⚠️</div>
+        <div class="danger-content">
+            <h4>Zone de danger</h4>
+            <p>Cette action est irréversible. L'utilisateur sera définitivement supprimé.</p>
+        </div>
+    </div>
+
+    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" class="delete-form">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+
+        <div class="delete-confirmation">
+            <p><strong>Voulez-vous vraiment supprimer cet utilisateur ?</strong></p>
+            <div class="user-info">
+                <span class="user-email">{{ user.email }}</span>
+                <span class="user-roles">
+                    {% for role in user.roles %}
+                    <span class="badge badge-secondary">{{ role }}</span>
+                    {% endfor %}
+                </span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger btn-sm"
+                onclick="return confirm('⚠️ ATTENTION !\n\nVous êtes sur le point de supprimer définitivement cet utilisateur.\n\nEmail: {{ user.email }}\n\nCette action est IRRÉVERSIBLE.\n\nÊtes-vous absolument certain de vouloir continuer ?');">
+                <span class="btn-icon">🗑️</span>
+                Supprimer définitivement
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="history.back();">
+                <span class="btn-icon">↩️</span>
+                Annuler
+            </button>
+        </div>
+    </form>
+</div>

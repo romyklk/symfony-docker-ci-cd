@@ -6,10 +6,10 @@
 
 {% block body %}
 <div class="d-flex justify-center">
-    <div class="auth-card">
-        <div class="card-header">
+    <div class="auth-card animate-fade-in">
+        <div class="card-header text-center">
             <h1 class="card-title">📝 Inscription</h1>
-            <p>Créez votre compte</p>
+            <p class="text-muted">Créez votre compte pour rejoindre notre communauté</p>
         </div>
 
         <div class="card-body">
@@ -17,7 +17,7 @@
 
             {{ form_start(registrationForm, {'attr': {'data-turbo': 'false'}}) }}
             <div class="form-group">
-                {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_label(registrationForm.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder':
                 'votre@email.com'}}) }}
                 {{ form_errors(registrationForm.email) }}
@@ -26,9 +26,12 @@
             <div class="form-group">
                 {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}})
                 }}
-                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Votre
-                mot de passe'}}) }}
+                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder':
+                'Choisissez un mot de passe sécurisé'}}) }}
                 {{ form_errors(registrationForm.plainPassword) }}
+                <div class="form-help">
+                    Le mot de passe doit contenir au moins 8 caractères
+                </div>
             </div>
 
             <div class="form-check">
@@ -38,12 +41,14 @@
                 {{ form_errors(registrationForm.agreeTerms) }}
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+            <button type="submit" class="btn btn-primary btn-block">
+                Créer mon compte
+            </button>
             {{ form_end(registrationForm) }}
         </div>
 
-        <div class="card-body text-center" style="border-top: 1px solid var(--border-color);">
-            <p class="text-secondary">Déjà un compte ?</p>
+        <div class="card-footer text-center">
+            <p class="text-muted mb-3">Déjà un compte ?</p>
             <a href="{{ path('app_login') }}" class="btn btn-outline">Se connecter</a>
         </div>
     </div>
