@@ -45,6 +45,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./deploy.sh"
           target: "/monapp/symfony-docker-ci-cd/"
+          overwrite: true
 
       - name: Déployer sur le serveur
         if: steps.check-secrets.outputs.missing == 'false'
