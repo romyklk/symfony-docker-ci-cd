@@ -10,6 +10,7 @@ on:
       - completed
     branches:
       - production
+
 jobs:
   deploy:
     name: Deploy to Production
@@ -17,6 +18,7 @@ jobs:
     env:
       APP_ENV: prod
       APP_DEBUG: 0
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,6 +36,20 @@ jobs:
             echo "missing=false" >> $GITHUB_OUTPUT
             echo "✅ SSH secrets configurés"
           fi
+
+      - name: Supprimer ancien dossier deploy.sh s'il existe
+        if: steps.check-secrets.outputs.missing == 'false'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if [ -d /monapp/symfony-docker-ci-cd/deploy.sh ]; then
+              echo "🧹 Suppression du dossier erroné deploy.sh/"
+              rm -rf /monapp/symfony-docker-ci-cd/deploy.sh
+            fi
 
       - name: Copier deploy.sh sur le serveur
         if: steps.check-secrets.outputs.missing == 'false'
@@ -60,8 +76,8 @@ jobs:
           script: |
             set -e
             cd /monapp/symfony-docker-ci-cd
-            echo "On est dans $(pwd)"
-            echo "Liste des fichiers:"
+            echo "📁 On est dans $(pwd)"
+            echo "📄 Liste des fichiers:"
             ls -la
             chmod +x deploy.sh
             ./deploy.sh
