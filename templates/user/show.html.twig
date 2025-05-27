@@ -3,49 +3,135 @@
 {% block title %}Détails de l'utilisateur{% endblock %}
 
 {% block body %}
-<div class="d-flex justify-between align-center mb-4">
-    <h1>👤 Détails de l'utilisateur</h1>
-    <div class="d-flex gap-2">
-        <a href="{{ path('app_user_index') }}" class="btn btn-outline">← Retour à la liste</a>
-        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-secondary">✏️ Modifier</a>
+<div class="section">
+    <div class="d-flex justify-between items-center mb-4">
+        <div>
+            <h1>👤 Détails de l'utilisateur</h1>
+            <p class="text-muted">Consultez les informations de {{ user.email }}</p>
+        </div>
+        <div class="d-flex gap-sm">
+            <a href="{{ path('app_user_index') }}" class="btn btn-outline">← Retour à la liste</a>
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary">✏️ Modifier</a>
+        </div>
     </div>
-</div>
 
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">Informations utilisateur</h2>
-    </div>
-    <div class="card-body">
-        <table class="table">
-            <tbody>
-                <tr>
-                    <th style="width: 150px;">ID</th>
-                    <td>{{ user.id }}</td>
-                </tr>
-                <tr>
-                    <th>Email</th>
-                    <td>{{ user.email }}</td>
-                </tr>
-                <tr>
-                    <th>Rôles</th>
-                    <td>
-                        {% for role in user.roles %}
-                        <span class="badge">{{ role }}</span>
-                        {% endfor %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <div class="grid grid-2">
+        <!-- Informations principales -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title m-0">Informations principales</h2>
+            </div>
+            <div class="card-body">
+                <div class="user-status mb-4">
+                    <div class="user-avatar">{{ user.email|first|upper }}</div>
+                    <div>
+                        <h3 class="font-semibold text-primary">{{ user.email|split('@')|first|title }}</h3>
+                        <p class="text-muted">{{ user.email }}</p>
+                    </div>
+                </div>
 
-<div class="card mt-4" style="border-color: var(--danger-color);">
-    <div class="card-header" style="background-color: #fef2f2; border-color: var(--danger-color);">
-        <h3 class="card-title" style="color: var(--danger-color);">⚠️ Zone de danger</h3>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th style="width: 120px;">ID</th>
+                            <td><span class="badge badge-secondary">#{{ user.id }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rôles</th>
+                            <td>
+                                {% for role in user.roles %}
+                                {% if role == 'ROLE_ADMIN' %}
+                                <span class="badge badge-error">{{ role }}</span>
+                                {% elseif role == 'ROLE_USER' %}
+                                <span class="badge badge-primary">{{ role }}</span>
+                                {% else %}
+                                <span class="badge badge-secondary">{{ role }}</span>
+                                {% endif %}
+                                {% if not loop.last %} {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Statut</th>
+                            <td><span class="badge badge-success">Actif</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Actions et sécurité -->
+        <div>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title m-0">⚙️ Actions rapides</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-col gap-sm">
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary btn-block">
+                            ✏️ Modifier les informations
+                        </a>
+                        <button class="btn btn-secondary btn-block" onclick="alert('Fonctionnalité à venir')">
+                            🔄 Réinitialiser le mot de passe
+                        </button>
+                        <button class="btn btn-outline btn-block" onclick="alert('Fonctionnalité à venir')">
+                            📧 Envoyer un email
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card danger-zone">
+                <div class="card-header">
+                    <h3 class="card-title m-0">⚠️ Zone de danger</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-sm text-muted mb-3">
+                        La suppression de cet utilisateur est <strong>irréversible</strong>.
+                        Toutes ses données seront définitivement perdues.
+                    </p>
+                    {{ include('user/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <p class="text-secondary mb-3">La suppression de cet utilisateur est irréversible.</p>
-        {{ include('user/_delete_form.html.twig') }}
+
+    {% if user.roles|length > 1 or 'ROLE_ADMIN' in user.roles %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 class="card-title m-0">🔐 Permissions et sécurité</h3>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-3">
+                {% for role in user.roles %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="text-2xl mb-2">
+                            {% if role == 'ROLE_ADMIN' %}🔴
+                            {% elseif role == 'ROLE_USER' %}🟢
+                            {% else %}🔵
+                            {% endif %}
+                        </div>
+                        <h4 class="font-semibold">{{ role }}</h4>
+                        <p class="text-sm text-muted">
+                            {% if role == 'ROLE_ADMIN' %}
+                            Accès administrateur complet
+                            {% elseif role == 'ROLE_USER' %}
+                            Accès utilisateur standard
+                            {% else %}
+                            Rôle personnalisé
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -1,0 +1,271 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Guide de style - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="page-header">
+        <h1>🎨 Guide de style du design épuré</h1>
+        <p class="lead">Aperçu de tous les composants et styles de l'application</p>
+    </div>
+
+    <!-- Palette de couleurs -->
+    <section class="style-section">
+        <h2>🎨 Palette de couleurs</h2>
+        <div class="color-palette">
+            <div class="color-item">
+                <div class="color-swatch" style="background-color: var(--color-primary);"></div>
+                <span>Primary</span>
+            </div>
+            <div class="color-item">
+                <div class="color-swatch" style="background-color: var(--color-accent);"></div>
+                <span>Accent</span>
+            </div>
+            <div class="color-item">
+                <div class="color-swatch" style="background-color: var(--color-success);"></div>
+                <span>Success</span>
+            </div>
+            <div class="color-item">
+                <div class="color-swatch" style="background-color: var(--color-warning);"></div>
+                <span>Warning</span>
+            </div>
+            <div class="color-item">
+                <div class="color-swatch" style="background-color: var(--color-error);"></div>
+                <span>Error</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Boutons -->
+    <section class="style-section">
+        <h2>🔘 Boutons</h2>
+        <div class="component-group">
+            <button class="btn btn-primary">Primaire</button>
+            <button class="btn btn-secondary">Secondaire</button>
+            <button class="btn btn-success">Succès</button>
+            <button class="btn btn-warning">Attention</button>
+            <button class="btn btn-danger">Danger</button>
+            <button class="btn btn-outline">Contour</button>
+        </div>
+        <div class="component-group">
+            <button class="btn btn-primary btn-sm">Petit</button>
+            <button class="btn btn-primary">Normal</button>
+            <button class="btn btn-primary btn-lg">Grand</button>
+        </div>
+    </section>
+
+    <!-- Badges -->
+    <section class="style-section">
+        <h2>🏷️ Badges</h2>
+        <div class="component-group">
+            <span class="badge badge-primary">Primaire</span>
+            <span class="badge badge-secondary">Secondaire</span>
+            <span class="badge badge-success">Succès</span>
+            <span class="badge badge-warning">Attention</span>
+            <span class="badge badge-danger">Danger</span>
+        </div>
+    </section>
+
+    <!-- Messages Flash -->
+    <section class="style-section">
+        <h2>📢 Messages Flash</h2>
+        <div class="flash-message flash-success">
+            <span class="flash-icon">✅</span>
+            <span class="flash-text">Opération réussie avec succès !</span>
+        </div>
+        <div class="flash-message flash-warning">
+            <span class="flash-icon">⚠️</span>
+            <span class="flash-text">Attention, vérifiez vos informations.</span>
+        </div>
+        <div class="flash-message flash-error">
+            <span class="flash-icon">❌</span>
+            <span class="flash-text">Une erreur s'est produite.</span>
+        </div>
+    </section>
+
+    <!-- Cartes -->
+    <section class="style-section">
+        <h2>🃏 Cartes</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Carte standard</h3>
+                </div>
+                <div class="card-body">
+                    <p>Contenu de la carte avec du texte et des informations.</p>
+                    <button class="btn btn-primary btn-sm">Action</button>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="card-body">
+                    <div class="feature-icon">🚀</div>
+                    <h4>Fonctionnalité</h4>
+                    <p>Description de la fonctionnalité avec des détails importants.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Formulaires -->
+    <section class="style-section">
+        <h2>📝 Formulaires</h2>
+        <div class="form-container">
+            <form class="form-modern">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label required">Adresse email</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📧</span>
+                            <input type="email" class="form-input" placeholder="utilisateur@example.com" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pays</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🌍</span>
+                            <select class="form-select">
+                                <option>Sélectionnez un pays</option>
+                                <option>France</option>
+                                <option>Belgique</option>
+                                <option>Suisse</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-icon">💾</span>
+                        Sauvegarder
+                    </button>
+                    <button type="button" class="btn btn-secondary">
+                        <span class="btn-icon">↩️</span>
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Zone de danger -->
+    <section class="style-section">
+        <h2>⚠️ Zone de danger</h2>
+        <div class="danger-zone">
+            <div class="danger-zone-header">
+                <div class="danger-icon">⚠️</div>
+                <div class="danger-content">
+                    <h4>Zone de danger</h4>
+                    <p>Cette section contient des actions irréversibles et dangereuses.</p>
+                </div>
+            </div>
+            <div class="delete-form">
+                <div class="form-actions">
+                    <button class="btn btn-danger btn-sm">
+                        <span class="btn-icon">🗑️</span>
+                        Action dangereuse
+                    </button>
+                    <button class="btn btn-secondary btn-sm">
+                        <span class="btn-icon">↩️</span>
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tableau -->
+    <section class="style-section">
+        <h2>📊 Tableaux</h2>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Jean Dupont</td>
+                        <td>jean@example.com</td>
+                        <td><span class="badge badge-success">Actif</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline">Voir</button>
+                            <button class="btn btn-sm btn-primary">Éditer</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Marie Martin</td>
+                        <td>marie@example.com</td>
+                        <td><span class="badge badge-warning">Suspendu</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline">Voir</button>
+                            <button class="btn btn-sm btn-primary">Éditer</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<style>
+    /* Styles spécifiques pour le guide de style */
+    .style-section {
+        margin: var(--spacing-xl) 0;
+        padding: var(--spacing-lg);
+        background-color: var(--color-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .color-palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-md);
+    }
+
+    .color-item {
+        text-align: center;
+    }
+
+    .color-swatch {
+        width: 100%;
+        height: 60px;
+        border-radius: var(--border-radius);
+        margin-bottom: var(--spacing-xs);
+        border: var(--border-width) solid var(--border-color);
+    }
+
+    .component-group {
+        display: flex;
+        gap: var(--spacing-md);
+        margin: var(--spacing-md) 0;
+        flex-wrap: wrap;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-md);
+    }
+
+    @media (max-width: 768px) {
+        .component-group {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .color-palette {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

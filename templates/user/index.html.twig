@@ -3,52 +3,107 @@
 {% block title %}Gestion des utilisateurs{% endblock %}
 
 {% block body %}
-<div class="actions-bar">
-    <h1>👥 Gestion des utilisateurs</h1>
-    <a href="{{ path('app_user_new') }}" class="btn btn-primary">
-        ➕ Nouvel utilisateur
-    </a>
-</div>
+<div class="section">
+    <div class="actions-bar">
+        <div>
+            <h1>👥 Gestion des utilisateurs</h1>
+            <p class="text-muted">Administrez les comptes utilisateurs de l'application</p>
+        </div>
+        <a href="{{ path('app_user_new') }}" class="btn btn-primary">
+            ➕ Nouvel utilisateur
+        </a>
+    </div>
 
-<div class="table-container">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Email</th>
-                <th>Rôles</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.email }}</td>
-                <td>
-                    {% for role in user.roles %}
-                    <span class="badge">{{ role }}</span>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title m-0">Liste des utilisateurs</h2>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Rôles</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <span class="font-medium text-primary">#{{ user.id }}</span>
+                        </td>
+                        <td>
+                            <div class="d-flex items-center gap-sm">
+                                <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                    {{ user.email|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="font-medium">{{ user.email }}</div>
+                                    <div class="text-xs text-muted">{{ user.email|split('@')|first|title }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% for role in user.roles %}
+                            {% if role == 'ROLE_ADMIN' %}
+                            <span class="badge badge-error">{{ role }}</span>
+                            {% elseif role == 'ROLE_USER' %}
+                            <span class="badge badge-primary">{{ role }}</span>
+                            {% else %}
+                            <span class="badge badge-secondary">{{ role }}</span>
+                            {% endif %}
+                            {% if not loop.last %} {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <span class="badge badge-success">Actif</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-sm">
+                                <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-outline btn-sm"
+                                    title="Voir les détails">
+                                    👁️ Voir
+                                </a>
+                                <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-secondary btn-sm"
+                                    title="Modifier">
+                                    ✏️ Modifier
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center p-5">
+                            <div class="text-muted">
+                                <div class="text-lg mb-2">👤</div>
+                                <p>Aucun utilisateur trouvé</p>
+                                <a href="{{ path('app_user_new') }}" class="btn btn-primary btn-sm mt-2">
+                                    Créer le premier utilisateur
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
                     {% endfor %}
-                </td>
-                <td>
-                    <div class="d-flex gap-2">
-                        <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-outline btn-sm">
-                            👁️ Voir
-                        </a>
-                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-secondary btn-sm">
-                            ✏️ Modifier
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" class="text-center">
-                    <p class="text-secondary">Aucun utilisateur trouvé</p>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+        {% if users|length > 0 %}
+        <div class="card-footer">
+            <div class="d-flex justify-between items-center">
+                <span class="text-sm text-muted">
+                    {{ users|length }} utilisateur{{ users|length > 1 ? 's' : '' }} au total
+                </span>
+                <div class="d-flex gap-sm">
+                    <a href="{{ path('app_user_new') }}" class="btn btn-outline btn-sm">
+                        Ajouter un utilisateur
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

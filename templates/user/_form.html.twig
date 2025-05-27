@@ -1,25 +1,77 @@
-{{ form_start(form) }}
-<div class="form-group">
-    {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
-    {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'utilisateur@example.com'}}) }}
-    {{ form_errors(form.email) }}
-</div>
+<div class="form-container">
+    {{ form_start(form, {'attr': {'class': 'form-modern', 'novalidate': 'novalidate'}}) }}
 
-{% if form.plainPassword is defined %}
-<div class="form-group">
-    {{ form_label(form.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-    {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
-    {{ form_errors(form.plainPassword) }}
-</div>
-{% endif %}
+    <div class="form-grid">
+        <div class="form-group">
+            {{ form_label(form.email, 'Adresse email', {'label_attr': {'class': 'form-label required'}}) }}
+            <div class="input-wrapper">
+                <span class="input-icon">📧</span>
+                {{ form_widget(form.email, {
+                'attr': {
+                'class': 'form-input',
+                'placeholder': 'utilisateur@example.com',
+                'autocomplete': 'email'
+                }
+                }) }}
+            </div>
+            <div class="form-errors">
+                {{ form_errors(form.email) }}
+            </div>
+        </div>
 
-{% if form.roles is defined %}
-<div class="form-group">
-    {{ form_label(form.roles, 'Rôles', {'label_attr': {'class': 'form-label'}}) }}
-    {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.roles) }}
-</div>
-{% endif %}
+        {% if form.plainPassword is defined %}
+        <div class="form-group">
+            {{ form_label(form.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label required'}}) }}
+            <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                {{ form_widget(form.plainPassword, {
+                'attr': {
+                'class': 'form-input',
+                'placeholder': 'Saisissez un mot de passe sécurisé',
+                'autocomplete': 'new-password'
+                }
+                }) }}
+            </div>
+            <div class="form-errors">
+                {{ form_errors(form.plainPassword) }}
+            </div>
+            <div class="form-hint">
+                <small>Le mot de passe doit contenir au moins 8 caractères</small>
+            </div>
+        </div>
+        {% endif %}
 
-<button type="submit" class="btn btn-primary">{{ button_label|default('Sauvegarder') }}</button>
-{{ form_end(form) }}
+        {% if form.roles is defined %}
+        <div class="form-group">
+            {{ form_label(form.roles, 'Rôles utilisateur', {'label_attr': {'class': 'form-label'}}) }}
+            <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                {{ form_widget(form.roles, {
+                'attr': {
+                'class': 'form-select'
+                }
+                }) }}
+            </div>
+            <div class="form-errors">
+                {{ form_errors(form.roles) }}
+            </div>
+            <div class="form-hint">
+                <small>Sélectionnez les rôles appropriés pour cet utilisateur</small>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <span class="btn-icon">💾</span>
+            {{ button_label|default('Sauvegarder') }}
+        </button>
+        <a href="{{ path('app_user_index') }}" class="btn btn-secondary btn-lg">
+            <span class="btn-icon">↩️</span>
+            Annuler
+        </a>
+    </div>
+
+    {{ form_end(form) }}
+</div>

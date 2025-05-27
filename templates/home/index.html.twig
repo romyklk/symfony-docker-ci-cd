@@ -3,17 +3,21 @@
 {% block title %}Accueil - Application Symfony{% endblock %}
 
 {% block body %}
-
-    <h1>🚀 Bienvenue sur Mon App</h1>
+<div class="text-center mb-5">
+    <h1 class="mb-3">🚀 Bienvenue sur Mon App</h1>
+    <p class="text-lg text-muted">Une application Symfony moderne avec un design épuré et des fonctionnalités avancées
+    </p>
+</div>
 
 <div class="welcome-features">
     <div class="card feature-card">
         <div class="feature-icon">🔐</div>
         <div class="card-body">
-            <h3 class="card-title">Authentification</h3>
-            <p>Système d'authentification sécurisé avec inscription et connexion</p>
+            <h3 class="card-title">Authentification Sécurisée</h3>
+            <p class="card-text">Système d'authentification robuste avec inscription, connexion et gestion des sessions
+                sécurisées</p>
             {% if not app.user %}
-            <div class="d-flex gap-2 justify-center mt-3">
+            <div class="d-flex gap-sm justify-center mt-3">
                 <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
                 <a href="{{ path('app_register') }}" class="btn btn-outline">S'inscrire</a>
             </div>
@@ -24,11 +28,15 @@
     <div class="card feature-card">
         <div class="feature-icon">👥</div>
         <div class="card-body">
-            <h3 class="card-title">Gestion d'utilisateurs</h3>
-            <p>Interface CRUD complète pour la gestion des utilisateurs</p>
+            <h3 class="card-title">Gestion d'Utilisateurs</h3>
+            <p class="card-text">Interface CRUD complète pour administrer les utilisateurs avec rôles et permissions</p>
             {% if app.user %}
             <div class="mt-3">
-                <a href="{{ path('app_user_index') }}" class="btn btn-primary">Voir les utilisateurs</a>
+                <a href="{{ path('app_user_index') }}" class="btn btn-primary">Gérer les utilisateurs</a>
+            </div>
+            {% else %}
+            <div class="mt-3">
+                <span class="badge badge-secondary">Connexion requise</span>
             </div>
             {% endif %}
         </div>
@@ -37,23 +45,75 @@
     <div class="card feature-card">
         <div class="feature-icon">⚡</div>
         <div class="card-body">
-            <h3 class="card-title">Performance</h3>
-            <p>Application optimisée avec cache, assets compilés et déploiement automatisé</p>
+            <h3 class="card-title">Performance Optimisée</h3>
+            <p class="card-text">Application haute performance avec cache intégré, assets optimisés et déploiement
+                automatisé</p>
+            <div class="mt-3">
+                <span class="badge badge-success">Production Ready</span>
+            </div>
         </div>
     </div>
 </div>
 
 {% if app.user %}
-<div class="card mt-4">
-    <div class="card-header">
-        <h2 class="card-title">Tableau de bord</h2>
+<div class="section mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title m-0">📊 Tableau de bord</h2>
+        </div>
+        <div class="card-body">
+            <div class="user-status">
+                <div class="user-avatar">{{ app.user.email|first|upper }}</div>
+                <div>
+                    <h4 class="font-semibold text-primary">Bienvenue, {{ app.user.email|split('@')|first|title }} !</h4>
+                    <p class="text-muted mb-2"><strong>Email :</strong> {{ app.user.email }}</p>
+                    <p class="text-muted mb-3"><strong>Rôles :</strong>
+                        {% for role in app.user.roles %}
+                        <span class="badge badge-primary">{{ role }}</span>{% if not loop.last %} {% endif %}
+                        {% endfor %}
+                    </p>
+                    <div class="d-flex gap-sm">
+                        <a href="{{ path('app_user_index') }}" class="btn btn-primary btn-sm">Gérer les utilisateurs</a>
+                        <a href="{{ path('app_logout') }}" class="btn btn-outline btn-sm">Se déconnecter</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <div class="user-status">
-            <div class="user-avatar">{{ app.user.email|first|upper }}</div>
-            <div>
-                <p><strong>Connecté en tant que :</strong> {{ app.user.email }}</p>
-                <p class="text-secondary">Rôles : {{ app.user.roles|join(', ') }}</p>
+</div>
+
+<div class="section">
+    <div class="grid grid-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-accent">{{ app.user.roles|length }}</h3>
+                <p class="text-muted">Rôles attribués</p>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">Actif</h3>
+                <p class="text-muted">Statut du compte</p>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ 'now'|date('H:i') }}</h3>
+                <p class="text-muted">Dernière connexion</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="section mt-5">
+    <div class="card text-center">
+        <div class="card-body p-5">
+            <h3 class="card-title">🎯 Prêt à commencer ?</h3>
+            <p class="card-text text-lg">Rejoignez notre communauté et découvrez toutes les fonctionnalités de
+                l'application</p>
+            <div class="d-flex gap-md justify-center mt-4">
+                <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">Créer un compte</a>
+                <a href="{{ path('app_login') }}" class="btn btn-outline btn-lg">J'ai déjà un compte</a>
             </div>
         </div>
     </div>

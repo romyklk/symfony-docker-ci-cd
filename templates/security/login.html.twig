@@ -6,16 +6,16 @@
 
 {% block body %}
 <div class="d-flex justify-center">
-    <div class="auth-card">
-        <div class="card-header">
+    <div class="auth-card animate-fade-in">
+        <div class="card-header text-center">
             <h1 class="card-title">🔑 Connexion</h1>
-            <p>Connectez-vous à votre compte</p>
+            <p class="text-muted">Connectez-vous à votre compte pour accéder à l'application</p>
         </div>
 
         <div class="card-body">
             {% if error %}
-            <div class="alert alert-danger">
-                {{ error.messageKey|trans(error.messageData, 'security') }}
+            <div class="alert alert-error">
+                <strong>Erreur :</strong> {{ error.messageKey|trans(error.messageData, 'security') }}
             </div>
             {% endif %}
 
@@ -46,7 +46,7 @@
                     <label for="remember_me" class="form-label">Se souvenir de moi</label>
                 </div>
 
-                <button class="btn btn-primary w-100" type="submit">
+                <button class="btn btn-primary btn-block" type="submit">
                     Se connecter
                 </button>
             </form>

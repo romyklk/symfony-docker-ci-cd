@@ -13,4 +13,10 @@ final class HomeController extends AbstractController
     {
         return $this->render('home/index.html.twig');
     }
+
+    #[Route('/style-guide', name: 'app_style_guide')]
+    public function styleGuide(): Response
+    {
+        return $this->render('style-guide.html.twig');
+    }
 }

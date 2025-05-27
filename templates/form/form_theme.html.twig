@@ -1,0 +1,93 @@
+{# Thème de formulaire personnalisé pour le design épuré #}
+
+{# Champ de base #}
+{% block form_widget_simple %}
+{% set attr = attr|merge({class: (attr.class|default('') ~ ' form-input')|trim}) %}
+{{ parent() }}
+{% endblock %}
+
+{# Select #}
+{% block choice_widget_collapsed %}
+{% set attr = attr|merge({class: (attr.class|default('') ~ ' form-select')|trim}) %}
+{{ parent() }}
+{% endblock %}
+
+{# Textarea #}
+{% block textarea_widget %}
+{% set attr = attr|merge({class: (attr.class|default('') ~ ' form-input')|trim}) %}
+{{ parent() }}
+{% endblock %}
+
+{# Label personnalisé #}
+{% block form_label %}
+{% if label is not same as(false) %}
+{% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' form-label')|trim}) %}
+{% if required %}
+{% set label_attr = label_attr|merge({class: (label_attr.class ~ ' required')|trim}) %}
+{% endif %}
+{% endif %}
+{{ parent() }}
+{% endblock %}
+
+{# Erreurs personnalisées #}
+{% block form_errors %}
+{% if errors|length > 0 %}
+<div class="form-errors">
+    <ul>
+        {% for error in errors %}
+        <li>{{ error.message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}
+
+{# Row personnalisée #}
+{% block form_row %}
+<div class="form-group{% if (not compound or force_error|default(false)) and not valid %} has-error{% endif %}">
+    {{ form_label(form) }}
+    {% if attr.icon is defined %}
+    <div class="input-wrapper">
+        <span class="input-icon">{{ attr.icon }}</span>
+        {{ form_widget(form) }}
+    </div>
+    {% else %}
+    {{ form_widget(form) }}
+    {% endif %}
+    {{ form_errors(form) }}
+    {% if help is defined and help %}
+    <div class="form-hint">
+        <small>{{ help }}</small>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{# Checkbox/Radio #}
+{% block checkbox_widget %}
+{% set attr = attr|merge({class: (attr.class|default('') ~ ' form-check-input')|trim}) %}
+{{ parent() }}
+{% endblock %}
+
+{% block radio_widget %}
+{% set attr = attr|merge({class: (attr.class|default('') ~ ' form-check-input')|trim}) %}
+{{ parent() }}
+{% endblock %}
+
+{# Bouton de soumission #}
+{% block submit_widget %}
+{% set attr = attr|merge({class: (attr.class|default('btn btn-primary'))|trim}) %}
+{{ parent() }}
+{% endblock %}
+
+{# Bouton reset #}
+{% block reset_widget %}
+{% set attr = attr|merge({class: (attr.class|default('btn btn-secondary'))|trim}) %}
+{{ parent() }}
+{% endblock %}
+
+{# Bouton standard #}
+{% block button_widget %}
+{% set attr = attr|merge({class: (attr.class|default('btn btn-secondary'))|trim}) %}
+{{ parent() }}
+{% endblock %}
