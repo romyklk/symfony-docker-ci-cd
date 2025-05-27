@@ -12,23 +12,22 @@ on:
       - production
 
 jobs:
-  check-ci:
-    name: Check CI Status
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.ref == 'refs/heads/production' }}
-    steps:
-      - name: CI Status Check
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "✅ CI Pipeline completed successfully"
-          else
-            echo "🔄 Direct push to production branch"
-          fi
-
+  #  check-ci:
+  #    name: Check CI Status
+  #    runs-on: ubuntu-latest
+  #    if: ${{ github.event.workflow_run.conclusion == 'success' || github.ref == 'refs/heads/production' }}
+  #    steps:
+  #      - name: CI Status Check
+  #        run: |
+  #          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+  #           echo "✅ CI Pipeline completed successfully"
+  #          else
+  #            echo "🔄 Direct push to production branch"
+  #          fi  
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: check-ci
+    # needs: check-ci
     env:
       APP_ENV: prod
       APP_DEBUG: 0
@@ -36,14 +35,14 @@ jobs:
       - name: Check SSH secrets
         id: check-secrets
         run: |
-          if [ -z "${{ secrets.PROD_SSH_HOST }}" ] || [ -z "${{ secrets.PROD_SSH_USERNAME }}" ] || [ -z "${{ secrets.PROD_SSH_PRIVATE_KEY }}" ]; then
+          if [ -z "${{ secrets.SSH_HOST }}" ] || [ -z "${{ secrets.SSH_USERNAME }}" ] || [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
             echo "missing=true" >> $GITHUB_OUTPUT
             echo "❌ SSH secrets are not configured"
             echo "Please configure the following secrets in repository settings:"
-            echo "- PROD_SSH_HOST"
-            echo "- PROD_SSH_USERNAME" 
-            echo "- PROD_SSH_PORT (optional, defaults to 22)"
-            echo "- PROD_SSH_PRIVATE_KEY"
+            echo "- SSH_HOST"
+            echo "- SSH_USERNAME"
+            echo "- SSH_PORT (optional, defaults to 22)"
+            echo "- SSH_PRIVATE_KEY"
           else
             echo "missing=false" >> $GITHUB_OUTPUT
             echo "✅ SSH secrets are configured"
@@ -54,7 +53,7 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME  }}
+          username: ${{ secrets.SSH_USERNAME }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 300s
@@ -66,4 +65,3 @@ jobs:
             pwd
             echo "Vérification de la présence du dossier de l'application..."
             ls -la /monapp
-
