@@ -32,6 +32,16 @@ jobs:
       APP_ENV: prod
       APP_DEBUG: 0
     steps:
+      - name: Copier deploy.sh sur le serveur
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./deploy.sh"
+          target: "/monapp/symfony-docker-ci-cd/deploy.sh"
+
       - name: Check SSH secrets
         id: check-secrets
         run: |
@@ -65,3 +75,6 @@ jobs:
             echo "Liste des fichiers:"
             ls -la
             echo "Test simple terminé"
+            chmod +x deploy.sh
+            ./deploy.sh
+            echo "Déploiement terminé avec succès"
