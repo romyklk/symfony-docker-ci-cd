@@ -1,0 +1,65 @@
+name: CD Pipeline (Deploy to Production)
+
+on:
+  push:
+    branches:
+      - production
+  workflow_run:
+    workflows: ["CI Pipeline (Audit, Quality, Tests)"]
+    types:
+      - completed
+    branches:
+      - production
+
+jobs:
+  # Vérifier que le CI est passé avant de déployer
+  check-ci:
+    name: Check CI Status
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.ref == 'refs/heads/production' }}
+    steps:
+      - name: CI Status Check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "✅ CI Pipeline completed successfully"
+          else
+            echo "🔄 Direct push to production branch"
+          fi
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: check-ci
+    env:
+      APP_ENV: prod
+      APP_DEBUG: 0
+    steps:
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USERNAME }}
+          port: ${{ secrets.PROD_SSH_PORT }}
+          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          timeout: 300s
+          command_timeout: 60s
+          script: |
+            set -e
+
+            # Aller dans le répertoire du projet
+            cd /var/www/symfony-docker-ci-cd || exit 1
+
+            # Exécuter le script de déploiement
+            ./deploy.sh
+
+      - name: Notify Deployment Success
+        if: success()
+        run: |
+          echo "✅ Deployment to production completed successfully!"
+          # Ici vous pouvez ajouter des notifications (Slack, Discord, email, etc.)
+
+      - name: Notify Deployment Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment to production failed!"
+          # Ici vous pouvez ajouter des notifications d'erreur

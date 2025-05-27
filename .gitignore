@@ -8,6 +8,12 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
+###> production secrets ###
+# Ne jamais commiter les fichiers de production
+/.env.prod.local
+/config/secrets/prod/
+###< production secrets ###
+
 ###> phpunit/phpunit ###
 /phpunit.xml
 .phpunit.result.cache

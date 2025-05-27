@@ -1,6 +1,6 @@
 services:
   php:
-    user: "${USER_ID}:${GROUP_ID}" # Utilisateur et groupe de l'hôte pour éviter les problèmes de permissions
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}" # Utilisateur et groupe de l'hôte pour éviter les problèmes de permissions
     build: ./docker/php
     volumes:
       - .:/var/www:delegated # delegated pour performance(Une option de performance utilisée pour les systèmes de fichiers montés)
@@ -9,30 +9,33 @@ services:
     depends_on:
       - database
     restart: unless-stopped
-    
-
+    environment:
+      - APP_ENV=${APP_ENV:-dev}
+      - APP_DEBUG=${APP_DEBUG:-1}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      - MESSENGER_TRANSPORT_DSN=${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}
+      - MAILER_DSN=${MAILER_DSN:-null://null}
 
   nginx:
     build: ./docker/nginx
     volumes:
       - ./public:/var/www/public:delegated # Point d'entré pour le dossier public de Symfony
     ports:
-      - "80:80"  # Port exposé pour accéder à l'application
+      - "${NGINX_PORT:-80}:80" # Port exposé pour accéder à l'application
     networks:
       - app_network
     depends_on:
       - php
     restart: unless-stopped
 
-
   database:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: symfony_docker_ci_cd
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      # MYSQL_ALLOW_EMPTY_ROOT_PASSWORD supprimé (inutile avec MYSQL_ROOT_PASSWORD)
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-symfony_docker_ci_cd}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
       # Option 1: Volume Docker nommé (recommandé pour la persistance)
       - database_data:/var/lib/mysql
@@ -41,19 +44,21 @@ services:
     networks:
       - app_network
     restart: unless-stopped
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest  #  Image correcte
+    image: phpmyadmin/phpmyadmin:latest #  Image correcte
     depends_on:
       - database
     environment:
-      PMA_HOST: database          #  Connexion à MySQL
+      PMA_HOST: database #  Connexion à MySQL
       PMA_PORT: 3306
-      PMA_USER: root             #  Utilisateur pour la connexion
-      PMA_PASSWORD: root         #  Mot de passe
-      MYSQL_ROOT_PASSWORD: root  #  Nécessaire pour PHPMyAdmin
+      PMA_USER: ${MYSQL_USER:-user} #  Utilisateur pour la connexion
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-password} #  Mot de passe
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root} #  Nécessaire pour PHPMyAdmin
     ports:
-      - "8080:80"
+      - "${PHPMYADMIN_PORT:-8080}:80"
     networks:
       - app_network
     restart: unless-stopped
