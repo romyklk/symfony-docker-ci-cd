@@ -3,15 +3,122 @@
 {% block title %}Erreur serveur - Mon App{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>⚠️ Erreur serveur</h1>
-    <p style="margin: 1.5rem 0; color: #666;">
-        Une erreur interne du serveur s'est produite.
-    </p>
-    <div style="margin-top: 2rem;">
-        <a href="{{ path('app_home') }}" style="color: #007bff; text-decoration: none;">
-            ← Retour à l'accueil
-        </a>
+<div class="error-page">
+    <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h1 class="error-title">Erreur serveur</h1>
+        <div class="error-code">Erreur 500</div>
+        <p class="error-message">
+            Une erreur interne du serveur s'est produite. Nos équipes ont été notifiées et travaillent à résoudre le
+            problème.
+        </p>
+        <div class="error-actions">
+            <a href="{{ path('app_home') }}" class="btn btn-primary">
+                <span class="btn-icon">🏠</span>
+                Retour à l'accueil
+            </a>
+            <button onclick="location.reload()" class="btn btn-secondary">
+                <span class="btn-icon">🔄</span>
+                Réessayer
+            </button>
+        </div>
+        <div class="error-suggestions">
+            <h3>Que puis-je faire ?</h3>
+            <ul>
+                <li>Actualiser la page dans quelques minutes</li>
+                <li>Vérifier votre connexion internet</li>
+                <li>Contacter le support si le problème persiste</li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<style>
+    .error-page {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .error-container {
+        max-width: 500px;
+        padding: var(--spacing-xl);
+    }
+
+    .error-icon {
+        font-size: 4rem;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .error-title {
+        color: var(--color-error);
+        margin-bottom: var(--spacing-sm);
+        font-size: var(--font-size-3xl);
+    }
+
+    .error-code {
+        color: var(--color-medium-gray);
+        font-size: var(--font-size-xl);
+        font-weight: 600;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .error-message {
+        color: var(--color-dark-gray);
+        margin-bottom: var(--spacing-xl);
+        line-height: 1.6;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: var(--spacing-md);
+        justify-content: center;
+        margin-bottom: var(--spacing-xl);
+        flex-wrap: wrap;
+    }
+
+    .error-suggestions {
+        background-color: var(--color-light-gray);
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius);
+        text-align: left;
+    }
+
+    .error-suggestions h3 {
+        margin-bottom: var(--spacing-md);
+        color: var(--color-error);
+        font-size: var(--font-size-lg);
+    }
+
+    .error-suggestions ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .error-suggestions li {
+        margin-bottom: var(--spacing-sm);
+        padding: var(--spacing-xs) 0;
+        color: var(--color-dark-gray);
+    }
+
+    .error-suggestions li::before {
+        content: "• ";
+        color: var(--color-error);
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .error-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .error-actions .btn {
+            width: 100%;
+            max-width: 250px;
+        }
+    }
+</style>
 {% endblock %}
