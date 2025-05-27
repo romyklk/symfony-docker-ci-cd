@@ -76,3 +76,4 @@ jobs:
             "
 
             echo "✅ Déploiement terminé avec succès"
+            echo "Vider le cache et builder les assets et "
