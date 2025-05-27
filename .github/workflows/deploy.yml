@@ -10,10 +10,8 @@ on:
       - completed
     branches:
       - production
-
 jobs:
   deploy:
-    name: Deploy to Production
     runs-on: ubuntu-latest
     env:
       APP_ENV: prod
@@ -34,7 +32,7 @@ jobs:
             echo "✅ SSH secrets configured"
           fi
 
-      - name: Déployer sur le serveur (sans deploy.sh)
+      - name: Deploy and run commands on server
         if: steps.check-secrets.outputs.missing == 'false'
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -46,27 +44,26 @@ jobs:
           command_timeout: 120s
           script: |
             set -e
-
-            echo "📁 On est dans /monapp/symfony-docker-ci-cd"
             cd /monapp/symfony-docker-ci-cd
 
-            echo "⚙️ Configuration git safe.directory"
-            git config --global --add safe.directory /monapp/symfony-docker-ci-cd
+            echo "📁 On est dans $(pwd)"
+            echo "📄 Liste des fichiers :"
+            ls -la
 
-            echo "⬇️ Récupération et reset du code à la branche production"
-            git fetch origin production
-            git reset --hard origin/production
+            # Vérification de Composer
+            if ! command -v composer >/dev/null 2>&1; then
+              echo "❌ Composer n'est pas installé ou pas dans le PATH"
+              exit 1
+            fi
 
-            echo "📦 Installation / Mise à jour des dépendances (exemple avec composer)"
+            echo "📦 Composer version :"
+            composer --version
+
+            echo "📦 Installation / mise à jour des dépendances"
             composer install --no-dev --optimize-autoloader
 
-            echo "🧹 Nettoyage cache"
-            php bin/console cache:clear --env=prod
-
-            echo "🔧 Migration base de données (si besoin)"
-            php bin/console doctrine:migrations:migrate --no-interaction --env=prod
-
-            echo "🚀 Redémarrage des services docker"
-            docker-compose -f compose.yaml restart php nginx
+            # Ajoute ici d'autres commandes de déploiement si besoin, exemple :
+            # php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+            # php bin/console cache:clear --env=prod
 
             echo "✅ Déploiement terminé avec succès"
