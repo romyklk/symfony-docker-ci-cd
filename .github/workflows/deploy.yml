@@ -60,13 +60,8 @@ jobs:
           command_timeout: 60s
           script: |
             set -e
-            echo "Connecté à $(hostname) $(whoami)"
-            echo "Déploiement de l'application Symfony..."
-            pwd
-            echo "Vérification de la présence du dossier de l'application..."
-            ls -la /monapp
-            echo "Listing /monapp/symfony-docker-ci-cd"
-            ls -la /monapp/symfony-docker-ci-cd
-            cd /monapp/symfony-docker-ci-cd || { echo "Le dossier n'existe pas"; exit 1; }
-            echo "PWD après cd : $(pwd)"
-            ./deploy.sh
+            cd //monapp/symfony-docker-ci-cd
+            echo "On est dans $(pwd)"
+            echo "Liste des fichiers:"
+            ls -la
+            echo "Test simple terminé"
