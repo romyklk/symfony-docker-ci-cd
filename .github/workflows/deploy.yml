@@ -72,22 +72,5 @@ jobs:
       - name: Skip deployment (missing secrets)
         if: steps.check-secrets.outputs.missing == 'true'
         run: |
-          echo "🔄 Deployment skipped - SSH secrets not configured"
-          echo "This is normal for forks or development environments"
-          echo ""
-          echo "To configure SSH deployment:"
-          echo "1. Go to repository Settings > Secrets and variables > Actions"
-          echo "2. Add the required secrets listed above"
-          echo "3. Re-run the workflow"
-
-      - name: Notify Deployment Success
-        if: success()
-        run: |
-          echo "✅ Deployment to production completed successfully!"
-          # Ici vous pouvez ajouter des notifications (Slack, Discord, email, etc.)
-
-      - name: Notify Deployment Failure
-        if: failure()
-        run: |
-          echo "❌ Deployment to production failed!"
-          # Ici vous pouvez ajouter des notifications d'erreur
+          cd /monapp/symfony-docker-ci-cd
+          ./deploy.sh
