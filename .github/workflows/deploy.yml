@@ -34,12 +34,29 @@ jobs:
       APP_ENV: prod
       APP_DEBUG: 0
     steps:
+      - name: Check SSH secrets
+        id: check-secrets
+        run: |
+          if [ -z "${{ secrets.PROD_SSH_HOST }}" ] || [ -z "${{ secrets.PROD_SSH_USERNAME }}" ] || [ -z "${{ secrets.PROD_SSH_PRIVATE_KEY }}" ]; then
+            echo "missing=true" >> $GITHUB_OUTPUT
+            echo "❌ SSH secrets are not configured"
+            echo "Please configure the following secrets in repository settings:"
+            echo "- PROD_SSH_HOST"
+            echo "- PROD_SSH_USERNAME" 
+            echo "- PROD_SSH_PORT (optional, defaults to 22)"
+            echo "- PROD_SSH_PRIVATE_KEY"
+          else
+            echo "missing=false" >> $GITHUB_OUTPUT
+            echo "✅ SSH secrets are configured"
+          fi
+
       - name: Deploy to Production Server
+        if: steps.check-secrets.outputs.missing == 'false'
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USERNAME }}
-          port: ${{ secrets.PROD_SSH_PORT }}
+          port: ${{ secrets.PROD_SSH_PORT || '22' }}
           key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
           timeout: 300s
           command_timeout: 60s
@@ -51,6 +68,17 @@ jobs:
 
             # Exécuter le script de déploiement
             ./deploy.sh
+
+      - name: Skip deployment (missing secrets)
+        if: steps.check-secrets.outputs.missing == 'true'
+        run: |
+          echo "🔄 Deployment skipped - SSH secrets not configured"
+          echo "This is normal for forks or development environments"
+          echo ""
+          echo "To configure SSH deployment:"
+          echo "1. Go to repository Settings > Secrets and variables > Actions"
+          echo "2. Add the required secrets listed above"
+          echo "3. Re-run the workflow"
 
       - name: Notify Deployment Success
         if: success()

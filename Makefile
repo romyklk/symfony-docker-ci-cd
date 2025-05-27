@@ -46,6 +46,7 @@ help:
 	@echo "$(YELLOW)🚀 Déploiement:$(NC)"
 	@echo "  deploy        Lancer le script de déploiement"
 	@echo "  deploy-test   Tester le déploiement localement"
+	@echo "  test-deploy   Test complet avec environnement simulé"
 
 ## 🐳 DOCKER
 
@@ -176,5 +177,15 @@ deploy-test:
 		chmod +x ./deploy.sh && bash -n ./deploy.sh && echo "$(GREEN)✅ Script valide$(NC)"; \
 	else \
 		echo "$(RED)❌ Script deploy.sh non trouvé$(NC)"; \
+		exit 1; \
+	fi
+
+## Test complet avec environnement simulé
+test-deploy:
+	@echo "$(GREEN)🧪 Test complet du déploiement...$(NC)"
+	@if [ -f "./test-deploy.sh" ]; then \
+		chmod +x ./test-deploy.sh && ./test-deploy.sh; \
+	else \
+		echo "$(RED)❌ Script test-deploy.sh non trouvé$(NC)"; \
 		exit 1; \
 	fi
