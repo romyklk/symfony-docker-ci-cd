@@ -63,7 +63,6 @@ jobs:
 
             echo "📦 Liste des containers Docker en cours:"
             docker ps
-
             docker exec -i symfony-docker-ci-cd_php_1 sh -c "
               cd /var/www && \
               git config --global --add safe.directory /var/www && \
