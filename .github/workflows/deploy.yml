@@ -10,8 +10,10 @@ on:
       - completed
     branches:
       - production
+
 jobs:
   deploy:
+    name: Deploy to Production
     runs-on: ubuntu-latest
     env:
       APP_ENV: prod
@@ -21,7 +23,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Check SSH secrets
+      - name: Vérifier la présence des secrets SSH
         id: check-secrets
         run: |
           if [ -z "${{ secrets.SSH_HOST }}" ] || [ -z "${{ secrets.SSH_USERNAME }}" ] || [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
@@ -32,7 +34,20 @@ jobs:
             echo "✅ SSH secrets configured"
           fi
 
-      - name: Deploy and run commands on server
+      - name: Copier les fichiers sur le serveur
+        if: steps.check-secrets.outputs.missing == 'false'
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "."
+          target: "/monapp/symfony-docker-ci-cd"
+          strip_components: 1
+          overwrite: true
+
+      - name: Déployer sur le serveur (docker exec)
         if: steps.check-secrets.outputs.missing == 'false'
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -44,26 +59,20 @@ jobs:
           command_timeout: 120s
           script: |
             set -e
-            cd /monapp/symfony-docker-ci-cd
+            echo "🚀 Déploiement dans le container PHP..."
 
-            echo "📁 On est dans $(pwd)"
-            echo "📄 Liste des fichiers :"
-            ls -la
+            echo "📦 Liste des containers Docker en cours:"
+            docker ps
 
-            # Vérification de Composer
-            if ! command -v composer >/dev/null 2>&1; then
-              echo "❌ Composer n'est pas installé ou pas dans le PATH"
-              exit 1
-            fi
-
-            echo "📦 Composer version :"
-            composer --version
-
-            echo "📦 Installation / mise à jour des dépendances"
-            composer install --no-dev --optimize-autoloader
-
-            # Ajoute ici d'autres commandes de déploiement si besoin, exemple :
-            # php bin/console doctrine:migrations:migrate --no-interaction --env=prod
-            # php bin/console cache:clear --env=prod
+            docker exec -i symfony-docker-ci-cd_php_1 sh -c "
+              cd /var/www && \
+              git config --global --add safe.directory /var/www && \
+              git reset --hard HEAD && \
+              git pull origin production && \
+              composer install --no-dev --optimize-autoloader && \
+              php bin/console cache:clear --env=prod && \
+              php bin/console doctrine:migrations:migrate --no-interaction && \
+              chown -R www-data:www-data /var/www/var
+            "
 
             echo "✅ Déploiement terminé avec succès"
