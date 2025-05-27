@@ -64,7 +64,7 @@ jobs:
             set -e
 
             # Aller dans le répertoire du projet
-            cd /var/www/symfony-docker-ci-cd || exit 1
+            cd /monapp/symfony-docker-ci-cd || exit 1
 
             # Exécuter le script de déploiement
             ./deploy.sh
