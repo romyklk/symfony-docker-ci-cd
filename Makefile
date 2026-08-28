@@ -1,4 +1,4 @@
-# Makefile pour Symfony Docker CI/CD
+# Makefile pour Symfony Docker CI/CD DEV
 # Simplifie les commandes Docker Compose courantes
 
 .PHONY: help build up down restart logs shell test quality audit clean install migrate assets
